@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANAND ICE - Student Events</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0066cc;
+            --secondary: #004080;
+            --accent: #ff6600;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #2ecc71;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h2 {
+            color: var(--dark);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Events Container */
+        .events-container {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .events-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .events-header h3 {
+            color: var(--dark);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-control {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: var(--white);
+        }
+
+        .event-categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .category-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--light);
+            color: var(--dark);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .category-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .event-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-image {
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .event-details {
+            padding: 15px;
+        }
+
+        .event-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .event-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .event-description {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        .event-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-upcoming {
+            background-color: #d4e6f7;
+            color: var(--primary);
+        }
+
+        .status-ongoing {
+            background-color: #d5f5e3;
+            color: var(--success);
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0, 102, 204, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .events-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .filter-controls {
+                width: 100%;
+            }
+            
+            .filter-control {
+                flex: 1;
+            }
+            
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Student Portal</h3>
+                <p>Event Management</p>
+            </div>
+            
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="student-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#" class="active"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="student-registered.html"><i class="fas fa-check-circle"></i> My Registrations</a></li>
+                    <li><a href="student-certificates.html"><i class="fas fa-certificate"></i> Certificates</a></li>
+                    <li><a href="student-settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Events</h2>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                    <span id="student-name">Student Name</span>
+                </div>
+            </div>
+            
+            <div class="events-container">
+                <div class="events-header">
+                    <h3>All Events</h3>
+                    <div class="filter-controls">
+                        <select class="filter-control" id="department-filter">
+                            <option value="">All Departments</option>
+                            <option value="cs">Computer Science</option>
+                            <option value="ec">Electrical</option>
+                            <option value="me">Mechanical</option>
+                        </select>
+                        <select class="filter-control" id="type-filter">
+                            <option value="">All Types</option>
+                            <option value="technical">Technical</option>
+                            <option value="cultural">Cultural</option>
+                            <option value="sports">Sports</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="event-categories">
+                    <button class="category-btn active" data-category="all">All Events</button>
+                    <button class="category-btn" data-category="upcoming">Upcoming</button>
+                    <button class="category-btn" data-category="ongoing">Ongoing</button>
+                    <button class="category-btn" data-category="technical">Technical</button>
+                    <button class="category-btn" data-category="cultural">Cultural</button>
+                    <button class="category-btn" data-category="workshop">Workshops</button>
+                </div>
+                
+                <div class="events-grid" id="events-grid">
+                    <!-- Events will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if student is logged in
+            if(localStorage.getItem('isStudentLoggedIn') !== 'true') {
+                window.location.href = 'login.html';
+            } else {
+                // Display student information
+                const studentName = localStorage.getItem('studentName') || 'Student';
+                const studentId = localStorage.getItem('studentId') || '';
+                document.getElementById('student-name').textContent = `${studentName} (${studentId})`;
+            }
+
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                // Clear student data
+                localStorage.removeItem('isStudentLoggedIn');
+                localStorage.removeItem('studentId');
+                localStorage.removeItem('studentName');
+                // Redirect to login page
+                window.location.href = 'login.html';
+            });
+
+            // Sample event data
+            const events = [
+                {
+                    id: 1,
+                    title: "Annual Science Fair",
+                    date: "May 15, 2025",
+                    time: "10:00 AM",
+                    venue: "Main Auditorium",
+                    department: "cs",
+                    type: "technical",
+                    status: "upcoming",
+                    description: "Showcase your innovative projects and compete with peers from different departments.",
+                    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    registered: false
+                },
+                {
+                    id: 2,
+                    title: "Hackathon 2025",
+                    date: "May 18-20, 2025",
+                    time: "9:00 AM",
+                    venue: "Computer Lab",
+                    department: "cs",
+                    type: "technical",
+                    status: "ongoing",
+                    description: "48-hour coding competition to build innovative solutions for real-world problems.",
+                    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    registered: true
+                },
+                {
+                    id: 3,
+                    title: "Cultural Fest",
+                    date: "May 22-24, 2025",
+                    time: "11:00 AM",
+                    venue: "College Ground",
+                    department: "ec",
+                    type: "cultural",
+                    status: "upcoming",
+                    description: "Annual cultural festival showcasing talent in music, dance, and arts.",
+                    image: "https://images.unsplash.com/photo-1541178735493-479c1a27ed24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80",
+                    registered: false
+                },
+                {
+                    id: 4,
+                    title: "Sports Tournament",
+                    date: "May 25-28, 2025",
+                    time: "8:00 AM",
+                    venue: "Sports Complex",
+                    department: "me",
+                    type: "sports",
+                    status: "upcoming",
+                    description: "Inter-department sports competition featuring cricket, football, and more.",
+                    image: "https://images.unsplash.com/photo-1547347298-4074fc3086f0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    registered: false
+                },
+                {
+                    id: 5,
+                    title: "Robotics Workshop",
+                    date: "June 1, 2025",
+                    time: "2:00 PM",
+                    venue: "Engineering Lab",
+                    department: "ec",
+                    type: "workshop",
+                    status: "upcoming",
+                    description: "Hands-on workshop on building and programming robots.",
+                    image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    registered: true
+                },
+                {
+                    id: 6,
+                    title: "AI Seminar",
+                    date: "June 5, 2025",
+                    time: "3:00 PM",
+                    venue: "Seminar Hall",
+                    department: "cs",
+                    type: "technical",
+                    status: "upcoming",
+                    description: "Learn about the latest advancements in Artificial Intelligence.",
+                    image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    registered: false
+                }
+            ];
+
+            // Render events
+            function renderEvents(filteredEvents = events) {
+                const eventsGrid = document.getElementById('events-grid');
+                eventsGrid.innerHTML = '';
+
+                filteredEvents.forEach(event => {
+                    const eventItem = document.createElement('div');
+                    eventItem.className = 'event-item';
+                    eventItem.innerHTML = `
+                        <div class="event-image" style="background-image: url('${event.image}')"></div>
+                        <div class="event-details">
+                            <h4 class="event-title">${event.title}</h4>
+                            <div class="event-meta">
+                                <span><i class="fas fa-calendar-day"></i> ${event.date} at ${event.time}</span>
+                                <span class="event-status status-${event.status}">${event.status.charAt(0).toUpperCase() + event.status.slice(1)}</span>
+                            </div>
+                            <div class="event-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> ${event.venue}</span>
+                                <span><i class="fas fa-building"></i> ${getDepartmentName(event.department)}</span>
+                            </div>
+                            <p class="event-description">${event.description}</p>
+                            <div class="event-actions">
+                                <button class="btn ${event.registered ? 'btn-success' : 'btn-primary'}" 
+                                        data-event-id="${event.id}">
+                                    ${event.registered ? 'Registered' : 'Register'}
+                                </button>
+                                <button class="btn btn-outline view-details" data-event-id="${event.id}">
+                                    Details
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    eventsGrid.appendChild(eventItem);
+                });
+
+                // Add event listeners to the new buttons
+                addEventListeners();
+            }
+
+            // Get department name from code
+            function getDepartmentName(code) {
+                const departments = {
+                    'cs': 'Computer Science',
+                    'ec': 'Electrical',
+                    'me': 'Mechanical'
+                };
+                return departments[code] || 'General';
+            }
+
+            // Filter events based on selected filters
+            function filterEvents() {
+                const departmentFilter = document.getElementById('department-filter').value;
+                const typeFilter = document.getElementById('type-filter').value;
+                const activeCategory = document.querySelector('.category-btn.active').dataset.category;
+
+                let filteredEvents = events;
+
+                // Apply department filter
+                if (departmentFilter) {
+                    filteredEvents = filteredEvents.filter(event => event.department === departmentFilter);
+                }
+
+                // Apply type filter
+                if (typeFilter) {
+                    filteredEvents = filteredEvents.filter(event => event.type === typeFilter);
+                }
+
+                // Apply category filter
+                if (activeCategory !== 'all') {
+                    if (activeCategory === 'upcoming' || activeCategory === 'ongoing') {
+                        filteredEvents = filteredEvents.filter(event => event.status === activeCategory);
+                    } else {
+                        filteredEvents = filteredEvents.filter(event => event.type === activeCategory);
+                    }
+                }
+
+                renderEvents(filteredEvents);
+            }
+
+            // Add event listeners to buttons
+            function addEventListeners() {
+                // Register buttons
+                document.querySelectorAll('.btn-primary, .btn-success').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const eventId = parseInt(this.dataset.eventId);
+                        const event = events.find(e => e.id === eventId);
+                        
+                        if (event.registered) {
+                            alert(`You are already registered for ${event.title}`);
+                        } else {
+                            if (confirm(`Register for ${event.title}?`)) {
+                                event.registered = true;
+                                this.textContent = 'Registered';
+                                this.classList.remove('btn-primary');
+                                this.classList.add('btn-success');
+                                alert(`Successfully registered for ${event.title}`);
+                            }
+                        }
+                    });
+                });
+
+                // View Details buttons
+                document.querySelectorAll('.view-details').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const eventId = parseInt(this.dataset.eventId);
+                        const event = events.find(e => e.id === eventId);
+                        
+                        alert(`Detailed information for ${event.title}:\n\n` +
+                              `Date: ${event.date}\n` +
+                              `Time: ${event.time}\n` +
+                              `Venue: ${event.venue}\n` +
+                              `Department: ${getDepartmentName(event.department)}\n` +
+                              `Type: ${event.type.charAt(0).toUpperCase() + event.type.slice(1)}\n\n` +
+                              `${event.description}`);
+                    });
+                });
+            }
+
+            // Category filter buttons
+            document.querySelectorAll('.category-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    filterEvents();
+                });
+            });
+
+            // Department and type filter dropdowns
+            document.getElementById('department-filter').addEventListener('change', filterEvents);
+            document.getElementById('type-filter').addEventListener('change', filterEvents);
+
+            // Initial render
+            renderEvents();
+        });
+    </script>
+</body>
+</html>
